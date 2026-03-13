@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[co]
+*.egg-info
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Project data & cache
+.index_state.json
+data/input/
+data/output/
+data/chroma_db/
+chroma_db/
+neo4j_data/
+
+# Logs
+*.log
+
+# IDE (if you use)
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
