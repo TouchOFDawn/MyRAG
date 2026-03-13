@@ -1,4 +1,4 @@
-# MultiGraph-RAG System
+# Hybrid Agent System with GraphRAG
 
 [English](README.md) | [中文](README_zh.md)
 
@@ -6,34 +6,57 @@
 
 ## Overview
 
-MultiGraph-RAG is an advanced Retrieval-Augmented Generation (RAG) system that combines knowledge graph extraction, vector search, and intelligent query routing to provide accurate and context-aware responses.
+A hybrid intelligent agent system that combines advanced RAG capabilities with speculative tool execution. The system uses local small models for intelligent routing and branch prediction, achieving low-latency responses through parallel speculative execution of tool calls.
 
 ## Key Features
 
+### Agent System
+- **Speculative Tool Execution**: Local small model predicts and pre-executes high-latency tools (web fetching, weather API) in parallel with main LLM reasoning
+- **Smart Query Routing**: Local Qwen2.5-0.5B routes queries to optimal retrieval strategy (vector/graph/hybrid)
+- **Multi-Tool Integration**: Seamless coordination between RAG retrieval, web scraping, and external APIs
+
+### RAG Capabilities
 - **Multi-Source Data Loading**: Support for PDF, text files, and web content
 - **Knowledge Graph Construction**: Automatic entity and relationship extraction using LLMs
 - **Hybrid Retrieval**: Intelligent routing between vector search and graph traversal
+- **Dual Database Architecture**: ChromaDB for vectors + Neo4j for knowledge graphs
+
+### Infrastructure
 - **Multi-Model Support**: Compatible with OpenAI, DeepSeek, DashScope, Ollama, and Claude
 - **Flexible Embedding**: Support for HuggingFace, OpenAI, and local embeddings
-- **Dual Database Architecture**: ChromaDB for vectors + Neo4j for knowledge graphs
 - **Smart Caching**: Incremental indexing to avoid redundant processing
 - **Interactive Chat**: Real-time Q&A with context-aware generation
 
 ## Architecture
 
 ```
-Data Sources → Chunking → Graph Extraction → Dual Storage
-                                              ↓
-User Query → Router → Vector/Graph Retrieval → LLM Generation
+                    ┌─────────────────────────────────┐
+                    │   Data Ingestion Pipeline       │
+                    └─────────────────────────────────┘
+                                  ↓
+    Data Sources → Chunking → Graph Extraction → Dual Storage
+                                                      ↓
+                    ┌─────────────────────────────────┐
+                    │      Agent Execution Layer      │
+                    └─────────────────────────────────┘
+                                  ↓
+    User Query → Small Model Predictor (Qwen2.5-0.5B)
+                        ↓                    ↓
+              Query Router          Tool Predictor
+                        ↓                    ↓
+            Vector/Graph/Hybrid    Async Tool Execution
+                   Retrieval         (Web/Weather/etc)
+                        ↓                    ↓
+                    ┌─────────────────────────────────┐
+                    │   Main LLM (Parallel)           │
+                    └─────────────────────────────────┘
+                                  ↓
+                          Final Response
 ```
 
-**Components:**
-- **Data Loaders**: PDF, text, web scraping
-- **Semantic Splitter**: Markdown-aware chunking
-- **Graph Builder**: Entity/relation extraction with embeddings
-- **Query Router**: Local LLM-based retrieval strategy selection
-- **Retrievers**: Vector similarity + Neo4j graph traversal
-- **Generator**: Context-augmented response generation
+**Key Innovation:**
+- **Speculative Execution**: While main LLM processes the query, small model predicts needed tools and executes them in parallel, reducing total latency
+- **Dual Routing**: Separate small models for retrieval strategy and tool prediction
 
 ## Prerequisites
 
@@ -45,7 +68,7 @@ User Query → Router → Vector/Graph Retrieval → LLM Generation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/MyRAG.git
+git clone https://github.com/TouchOFDawn/MyRAG.git
 cd MyRAG
 ```
 
